@@ -1,8 +1,9 @@
 from scipy.stats import norm, bernoulli
 
 class Distribution() :
+    distribution = True
     def __init__(self) :
-        self.distribution = True
+        pass
 
 class Normal(Distribution) :
     def __init__(self, loc, scale) :
@@ -29,5 +30,7 @@ class Bernoulli(Distribution) :
 
 distribution_constants = {
     'norm' : Normal,
-    'bern' : Bernoulli
+    'bern' : Bernoulli,
+    'p_norm' : lambda v, l, s : Normal(l, s).logpdf(v),
+    'p_bern' : lambda v, p : Bernoulli(p).logpdf(v)
 }

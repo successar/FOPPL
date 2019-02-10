@@ -33,9 +33,24 @@ class FOPPLParser() :
         'expression : LPAREN IF expression expression expression RPAREN'
         p[0] = IfExpression(p[3], p[4], p[5])
 
-    def p_expression_let(self, p):
-        'expression : LPAREN LET LBRAC VARIABLE expression RBRAC expression RPAREN'
-        p[0] = LetExpression(p[4], p[5], p[7])
+    def p_expression_varexp(self, p):
+        '''varexpre : varexpre VARIABLE expression
+                    | VARIABLE expression'''
+        
+        if len(p) == 4 :
+            p[1].append((p[2], p[3]))
+            p[0] = p[1]
+        else :
+            p[0] = [(p[1], p[2])]
+
+    def p_expression_letsugar(self, p) :
+        'expression : LPAREN LET LBRAC varexpre RBRAC expression RPAREN'
+        varlist = p[4]
+        le = p[6]
+        for (v, e) in varlist[-1::-1] :
+            le = LetExpression(v, e, le) 
+
+        p[0] = le
 
     def p_expression_fcall(self, p) :
         'expression : LPAREN VARIABLE expression_list RPAREN'
@@ -51,8 +66,9 @@ class FOPPLParser() :
         if len(p) == 3 :
             p[1].append(p[2])
             p[0] = p[1]
-        else :
+        elif len(p) == 2 :
             p[0] = [p[1]]
+
 
     def p_sample(self, p) :
         'expression : LPAREN SAMPLE expression RPAREN'

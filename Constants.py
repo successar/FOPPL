@@ -22,6 +22,14 @@ constants = {
     '**' : generate_math_constant(power)()
 }
 
+bool_constants = {
+    'and' : lambda x, y : x and y,
+    'or' : lambda x, y : x or y,
+    'not' : lambda x : not x
+}
+
+constants.update(bool_constants)
+
 from Distributions import distribution_constants
 
 constants.update(distribution_constants)

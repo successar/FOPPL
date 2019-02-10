@@ -1,4 +1,10 @@
 from Constants import constants
+from Graph import *
+import random 
+
+def get_new_var() :
+    hash_1 = random.getrandbits(128)
+    return 'x_' + str(hash_1)
 
 class Environment() :
     def __init__(self) :
@@ -11,6 +17,9 @@ class Environment() :
 
     def run(self) :
         return self.toplevel.call(self, [])
+
+    def compile(self) :
+        return self.toplevel.compile(self, [])
 
 class Context() :
     def __init__(self, env) :
@@ -39,6 +48,13 @@ class Function() :
         context.variables = {k:v for k, v in zip(self.arguments, values)}
         return self.expression.run(context)
 
+    def compile(self, env, values) :
+        assert len(values) == len(self.arguments)
+        context = Context(env)
+        context.variables = {k:v for k, v in zip(self.arguments, values)}
+        context.predicate = True
+        return self.expression.compile(context)
+
 class Number(Expression) :
     def __init__(self, num) :
         self.num = num
@@ -49,6 +65,9 @@ class Number(Expression) :
 
     def run(self, context) :
         return self.num
+
+    def compile(self, context) :
+        return Graph(), GraphNumber(self.num)
 
 class Variable(Expression) :
     def __init__(self, name) :
@@ -61,6 +80,12 @@ class Variable(Expression) :
     def run(self, context) :
         if self.name in context.variables :
             return context.variables[self.name]
+        else :
+            raise LookupError("Variable does not exists ..")
+
+    def compile(self, context) :
+        if self.name in context.variables :
+            return Graph(), context.variables[self.name]
         else :
             raise LookupError("Variable does not exists ..")
 
@@ -78,11 +103,21 @@ class LetExpression(Expression) :
         if self.name in context.variables :
             raise LookupError("Already Exists ...")
         result = self.argument.run(context)
-        context.variables[self.name] = result
+        if self.name != '_' : context.variables[self.name] = result
         result = self.expression.run(context)
-        del context.variables[self.name]
+        if self.name != '_' : del context.variables[self.name]
 
         return result
+
+    def compile(self, context) :
+        if self.name in context.variables :
+            raise LookupError("Already Exists ...")
+        G1, E1 = self.argument.compile(context)
+        if self.name != '_' : context.variables[self.name] = E1
+        G2, E2 = self.expression.compile(context)
+        if self.name != '_' : del context.variables[self.name]
+
+        return G1.disjoint_sum(G2), E2
 
 class IfExpression(Expression) :
     def __init__(self, condition, true_branch, false_branch) :
@@ -103,6 +138,16 @@ class IfExpression(Expression) :
         else :
             return false_result
 
+    def compile(self, context) :
+        G1, E1 = self.condition.compile(context)
+        context.predicate = GraphConstantCall("and", [context.predicate, E1])
+        G2, E2 = self.true_branch.compile(context)
+        context.predicate = context.predicate.values[0]
+        context.predicate = GraphConstantCall("and", [context.predicate, GraphConstantCall('not', [E1])])
+        G3, E3 = self.false_branch.compile(context)
+        context.predicate = context.predicate.values[0]
+        return G1.disjoint_sum(G2.disjoint_sum(G3)), GraphIfExpression(E1, E2, E3)
+
 class ConstantCall(Expression) :
     def __init__(self, name, params) :
         self.name = name
@@ -119,6 +164,14 @@ class ConstantCall(Expression) :
             return obj(*results)
         else :
             raise LookupError("%s does not exist "%(self.name,))
+
+    def compile(self, context) :
+        results = [x.compile(context) for x in self.params]
+        G = Graph()
+        for r in results :
+            G = G.disjoint_sum(r[0])
+
+        return G, GraphConstantCall(self.name, [r[1] for r in results])
 
 class FunctionCall(Expression) :
     def __init__(self, name, params) :
@@ -137,6 +190,19 @@ class FunctionCall(Expression) :
         else :
             raise LookupError("%s does not exist "%(self.name,))
 
+    def compile(self, context) :
+        results = [x.compile(context) for x in self.params]
+        G = Graph()
+        for r in results :
+            G = G.disjoint_sum(r[0])
+
+        if self.name in context.env.procedures :
+            obj = context.env.procedures[self.name]
+            G1, E = obj.compile(context.env, results)  
+            return G.disjoint_sum(G1), E
+        else :
+            raise LookupError("%s does not exist "%(self.name,)) 
+
 class Sample(Expression) :
     def __init__(self, expression) :
         self.expression = expression
@@ -152,6 +218,20 @@ class Sample(Expression) :
         else :
             raise LookupError("Not A Distribution ...")
 
+    def compile(self, context) :
+        G1, E1 = self.expression.compile(context)
+        v = GraphVariable(get_new_var())
+        Z = E1.freevars()
+        F = E1.score(v, context.env)
+
+        G = Graph()
+        G.V |= (G1.V | set([v]))
+        G.A |= (G1.A | set([(z, v) for z in Z]))
+        G.P.update(G1.P)
+        G.P[v] = F
+        G.Y.update(G1.Y)
+        return G, v
+
 class Observe(Expression) :
     def __init__(self, expression_1, expression_2) :
         self.expression_1 = expression_1
@@ -164,3 +244,23 @@ class Observe(Expression) :
     def run(self, context) :
         result = self.expression_2.run(context)
         return result
+
+    def compile(self, context) :
+        G1, E1 = self.expression_1.compile(context)
+        G2, E2 = self.expression_2.compile(context)
+        G1 = G1.disjoint_sum(G2)
+        v = GraphVariable(get_new_var())
+        F1 = E1.score(v, context.env)
+        F = GraphIfExpression(context.predicate, F1, GraphNumber(1))
+        Z = F1.freevars() - set([v])
+        B = set([(z, v) for z in Z])
+
+        G = Graph()
+        G.V |= (G1.V | set([v]))
+        G.A |= (G1.A | B)
+        G.P.update(G1.P)
+        G.P[v] = F
+        G.Y.update(G1.Y)
+        G.Y[v] = E2
+
+        return G, E2
