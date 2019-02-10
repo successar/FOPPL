@@ -44,9 +44,13 @@ class FOPPLParser() :
             p[0] = [(p[1], p[2])]
 
     def p_expression_letsugar(self, p) :
-        'expression : LPAREN LET LBRAC varexpre RBRAC expression RPAREN'
+        'expression : LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN'
         varlist = p[4]
-        le = p[6]
+        exprlist = p[6]
+        le = exprlist[-1]
+        for e in exprlist[-2::-1] :
+            le = LetExpression('_', e, le)
+            
         for (v, e) in varlist[-1::-1] :
             le = LetExpression(v, e, le) 
 

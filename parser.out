@@ -10,7 +10,7 @@ Rule 4     arguments -> VARIABLE
 Rule 5     expression -> LPAREN IF expression expression expression RPAREN
 Rule 6     varexpre -> varexpre VARIABLE expression
 Rule 7     varexpre -> VARIABLE expression
-Rule 8     expression -> LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+Rule 8     expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
 Rule 9     expression -> LPAREN VARIABLE expression_list RPAREN
 Rule 10    expression_list -> expression_list expression
 Rule 11    expression_list -> expression
@@ -37,8 +37,8 @@ error                :
 Nonterminals, with rules where they appear
 
 arguments            : 1 3
-expression           : 1 2 5 5 5 6 7 8 10 11 12 13 13
-expression_list      : 9 10
+expression           : 1 2 5 5 5 6 7 10 11 12 13 13
+expression_list      : 8 9 10
 statement            : 1 0
 varexpre             : 6 8
 
@@ -50,7 +50,7 @@ state 0
     (1) statement -> . LPAREN DEFN VARIABLE LBRAC arguments RBRAC expression RPAREN statement
     (2) statement -> . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
@@ -74,7 +74,7 @@ state 2
 
     (1) statement -> LPAREN . DEFN VARIABLE LBRAC arguments RBRAC expression RPAREN statement
     (5) expression -> LPAREN . IF expression expression expression RPAREN
-    (8) expression -> LPAREN . LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> LPAREN . LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> LPAREN . VARIABLE expression_list RPAREN
     (12) expression -> LPAREN . SAMPLE expression RPAREN
     (13) expression -> LPAREN . OBSERVE expression expression RPAREN
@@ -131,7 +131,7 @@ state 7
     (10) expression_list -> . expression_list expression
     (11) expression_list -> . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
@@ -149,7 +149,7 @@ state 8
 
     (5) expression -> LPAREN IF . expression expression expression RPAREN
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
@@ -164,7 +164,7 @@ state 8
 
 state 9
 
-    (8) expression -> LPAREN LET . LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> LPAREN LET . LBRAC varexpre RBRAC expression_list RPAREN
 
     LBRAC           shift and go to state 17
 
@@ -173,7 +173,7 @@ state 10
 
     (12) expression -> LPAREN SAMPLE . expression RPAREN
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
@@ -190,7 +190,7 @@ state 11
 
     (13) expression -> LPAREN OBSERVE . expression expression RPAREN
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
@@ -213,7 +213,7 @@ state 12
 state 13
 
     (5) expression -> LPAREN . IF expression expression expression RPAREN
-    (8) expression -> LPAREN . LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> LPAREN . LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> LPAREN . VARIABLE expression_list RPAREN
     (12) expression -> LPAREN . SAMPLE expression RPAREN
     (13) expression -> LPAREN . OBSERVE expression expression RPAREN
@@ -230,7 +230,7 @@ state 14
     (9) expression -> LPAREN VARIABLE expression_list . RPAREN
     (10) expression_list -> expression_list . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
@@ -258,7 +258,7 @@ state 16
 
     (5) expression -> LPAREN IF expression . expression expression RPAREN
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
@@ -273,7 +273,7 @@ state 16
 
 state 17
 
-    (8) expression -> LPAREN LET LBRAC . varexpre RBRAC expression RPAREN
+    (8) expression -> LPAREN LET LBRAC . varexpre RBRAC expression_list RPAREN
     (6) varexpre -> . varexpre VARIABLE expression
     (7) varexpre -> . VARIABLE expression
 
@@ -292,7 +292,7 @@ state 19
 
     (13) expression -> LPAREN OBSERVE expression . expression RPAREN
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
@@ -341,7 +341,7 @@ state 23
 
     (5) expression -> LPAREN IF expression expression . expression RPAREN
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
@@ -356,7 +356,7 @@ state 23
 
 state 24
 
-    (8) expression -> LPAREN LET LBRAC varexpre . RBRAC expression RPAREN
+    (8) expression -> LPAREN LET LBRAC varexpre . RBRAC expression_list RPAREN
     (6) varexpre -> varexpre . VARIABLE expression
 
     RBRAC           shift and go to state 31
@@ -367,7 +367,7 @@ state 25
 
     (7) varexpre -> VARIABLE . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
@@ -425,9 +425,11 @@ state 30
 
 state 31
 
-    (8) expression -> LPAREN LET LBRAC varexpre RBRAC . expression RPAREN
+    (8) expression -> LPAREN LET LBRAC varexpre RBRAC . expression_list RPAREN
+    (10) expression_list -> . expression_list expression
+    (11) expression_list -> . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
@@ -438,13 +440,14 @@ state 31
     NUMBER          shift and go to state 5
     VARIABLE        shift and go to state 3
 
-    expression                     shift and go to state 38
+    expression_list                shift and go to state 38
+    expression                     shift and go to state 15
 
 state 32
 
     (6) varexpre -> varexpre VARIABLE . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
@@ -489,7 +492,7 @@ state 36
 
     (1) statement -> LPAREN DEFN VARIABLE LBRAC arguments RBRAC . expression RPAREN statement
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
@@ -516,10 +519,22 @@ state 37
 
 state 38
 
-    (8) expression -> LPAREN LET LBRAC varexpre RBRAC expression . RPAREN
+    (8) expression -> LPAREN LET LBRAC varexpre RBRAC expression_list . RPAREN
+    (10) expression_list -> expression_list . expression
+    (5) expression -> . LPAREN IF expression expression expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
+    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN SAMPLE expression RPAREN
+    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (14) expression -> . NUMBER
+    (15) expression -> . VARIABLE
 
     RPAREN          shift and go to state 41
+    LPAREN          shift and go to state 13
+    NUMBER          shift and go to state 5
+    VARIABLE        shift and go to state 3
 
+    expression                     shift and go to state 22
 
 state 39
 
@@ -538,14 +553,14 @@ state 40
 
 state 41
 
-    (8) expression -> LPAREN LET LBRAC varexpre RBRAC expression RPAREN .
+    (8) expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .
 
-    $end            reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression RPAREN .)
-    RPAREN          reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression RPAREN .)
-    LPAREN          reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression RPAREN .)
-    NUMBER          reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression RPAREN .)
-    VARIABLE        reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression RPAREN .)
-    RBRAC           reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression RPAREN .)
+    $end            reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
+    RPAREN          reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
+    LPAREN          reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
+    NUMBER          reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
+    VARIABLE        reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
+    RBRAC           reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
 
 
 state 42
@@ -554,7 +569,7 @@ state 42
     (1) statement -> . LPAREN DEFN VARIABLE LBRAC arguments RBRAC expression RPAREN statement
     (2) statement -> . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
     (9) expression -> . LPAREN VARIABLE expression_list RPAREN
     (12) expression -> . LPAREN SAMPLE expression RPAREN
     (13) expression -> . LPAREN OBSERVE expression expression RPAREN
