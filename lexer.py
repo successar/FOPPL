@@ -9,7 +9,7 @@ class FOPPLLexer() :
         'if' : 'IF'
     }
 
-    tokens = ['LPAREN','RPAREN', 'LBRAC', 'RBRAC', 'VARIABLE', 'NUMBER'] + list(reserved.values())
+    tokens = ['LPAREN','RPAREN', 'LBRAC', 'RBRAC', 'NUMBER', 'VARIABLE'] + list(reserved.values())
 
     # Tokens
 
@@ -18,14 +18,14 @@ class FOPPLLexer() :
     t_LBRAC  = r'\['
     t_RBRAC  = r'\]'
 
+    def t_NUMBER(self, t):
+        r'-?\d+(\.\d+)?'
+        t.value = float(t.value)
+        return t
+    
     def t_VARIABLE(self, t) :
         r'([^\s\(\)\]\[\d])([^\s\(\)\]\[])*'
         t.type = self.reserved.get(t.value,'VARIABLE')
-        return t
-
-    def t_NUMBER(self, t):
-        r'\d+(\.\d+)?'
-        t.value = float(t.value)
         return t
 
     # Ignored characters
