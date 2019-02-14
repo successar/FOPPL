@@ -34,8 +34,12 @@ class Graph() :
         plt.figure(figsize=(20,5))
         plt.gca().margins(0.2, 0.2)  
         pos = graphviz_layout(H, prog='dot')
-        nx.draw_networkx(H, pos=pos, with_labels=True, nodelist=[str(self.P[v]).replace('(', '\n(') for v in self.V if v not in self.Y], node_color='b', node_size=100)
-        nx.draw_networkx(H, pos=pos, with_labels=True, nodelist=[str(self.P[v]).replace('(', '\n(') for v in self.V if v in self.Y], node_color='r', node_size=100)
+        non_observe_nodes = [str(self.P[v]).replace('(', '\n(') for v in self.V if v not in self.Y]
+        observe_nodes = [str(self.P[v]).replace('(', '\n(') for v in self.V if v in self.Y]
+        nx.draw_networkx(H, pos=pos, nodelist=non_observe_nodes, alpha=0.3, node_color='#66c2a5', node_size=7000)
+        nx.draw_networkx_labels(H, pos=pos, nodelist=non_observe_nodes)
+        nx.draw_networkx(H, pos=pos, nodelist=observe_nodes, alpha=0.3, node_color='#fc8d62', node_size=7000)
+        nx.draw_networkx_labels(H, pos=pos, nodelist=observe_nodes)
         plt.tight_layout()
 
 class GraphExpression() :

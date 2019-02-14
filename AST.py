@@ -2,12 +2,9 @@ from Constants import constants
 from Graph import *
 import random 
 
-def get_new_var() :
-    hash_1 = random.getrandbits(128)
-    return 'x_' + str(hash_1)
-
 class Environment() :
     def __init__(self) :
+        self.random_var_id = 65
         self.procedures_order = []
         self.procedures = {}
         self.constants = constants
@@ -20,6 +17,21 @@ class Environment() :
 
     def compile(self) :
         return self.toplevel.compile(self, [])
+
+    def __str__(self) :
+        ret = ''
+        for p in self.procedures_order :
+            ret += self.procedures[p].__str__(0)
+        ret += self.toplevel.__str__(0)
+        return ret
+
+    def get_new_var(self) :
+        if self.random_var_id <= 90 :
+            v = 'x_' + chr(self.random_var_id)
+        else :
+            v = 'x_' + str(self.random_var_id)
+        self.random_var_id += 1
+        return v
 
 class Context() :
     def __init__(self, env) :
@@ -52,8 +64,13 @@ class Function() :
         assert len(values) == len(self.arguments)
         context = Context(env)
         context.variables = {k:v for k, v in zip(self.arguments, values)}
-        context.predicate = True
+        context.predicate = GraphNumber(True)
         return self.expression.compile(context)
+
+    def __str__(self, level=0):
+        ret = "\t"*level+"Function "+self.name+"(" + ','.join(self.arguments) + ")\n"
+        ret += self.expression.__str__(level+1)
+        return ret
 
 class Number(Expression) :
     def __init__(self, num) :
@@ -68,6 +85,10 @@ class Number(Expression) :
 
     def compile(self, context) :
         return Graph(), GraphNumber(self.num)
+
+    def __str__(self, level=0):
+        ret = "\t"*level+"Num "+str(self.num)+"\n"
+        return ret
 
 class Variable(Expression) :
     def __init__(self, name) :
@@ -88,6 +109,10 @@ class Variable(Expression) :
             return Graph(), context.variables[self.name]
         else :
             raise LookupError("Variable does not exists ..")
+
+    def __str__(self, level=0):
+        ret = "\t"*level+"Var "+self.name+"\n"
+        return ret
 
 class LetExpression(Expression) :
     def __init__(self, name, argument, expression) :
@@ -119,6 +144,13 @@ class LetExpression(Expression) :
 
         return G1.disjoint_sum(G2), E2
 
+    def __str__(self, level=0):
+        ret = "\t"*level+"Let "+self.name + ' = ' +"\n"
+        ret += self.argument.__str__(level+1)
+        ret += "\t"*level+"In"+"\n"
+        ret += self.expression.__str__(level+1)
+        return ret
+
 class IfExpression(Expression) :
     def __init__(self, condition, true_branch, false_branch) :
         self.condition = condition
@@ -148,6 +180,15 @@ class IfExpression(Expression) :
         context.predicate = context.predicate.values[0]
         return G1.disjoint_sum(G2.disjoint_sum(G3)), GraphIfExpression(E1, E2, E3)
 
+    def __str__(self, level=0):
+        ret = "\t"*level+"If"+"\n"
+        ret += self.condition.__str__(level+1)
+        ret += "\t"*level+"Then"+"\n"
+        ret += self.true_branch.__str__(level+1)
+        ret += "\t"*level+"Else"+"\n"
+        ret += self.false_branch.__str__(level+1)
+        return ret
+
 class ConstantCall(Expression) :
     def __init__(self, name, params) :
         self.name = name
@@ -172,6 +213,12 @@ class ConstantCall(Expression) :
             G = G.disjoint_sum(r[0])
 
         return G, GraphConstantCall(self.name, [r[1] for r in results])
+
+    def __str__(self, level=0):
+        ret = "\t"*level+"Call "+ self.name +"\n"
+        for p in self.params :
+            ret += p.__str__(level+1)
+        return ret
 
 class FunctionCall(Expression) :
     def __init__(self, name, params) :
@@ -203,6 +250,12 @@ class FunctionCall(Expression) :
         else :
             raise LookupError("%s does not exist "%(self.name,)) 
 
+    def __str__(self, level=0):
+        ret = "\t"*level+"Call "+ self.name +"\n"
+        for p in self.params :
+            ret += p.__str__(level+1)
+        return ret
+
 class Sample(Expression) :
     def __init__(self, expression) :
         self.expression = expression
@@ -220,7 +273,7 @@ class Sample(Expression) :
 
     def compile(self, context) :
         G1, E1 = self.expression.compile(context)
-        v = GraphVariable(get_new_var())
+        v = GraphVariable(context.env.get_new_var())
         Z = E1.freevars()
         F = E1.score(v, context.env)
 
@@ -231,6 +284,11 @@ class Sample(Expression) :
         G.P[v] = F
         G.Y.update(G1.Y)
         return G, v
+
+    def __str__(self, level=0):
+        ret = "\t"*level+"sample"+"\n"
+        ret += self.expression.__str__(level+1)
+        return ret
 
 class Observe(Expression) :
     def __init__(self, expression_1, expression_2) :
@@ -249,7 +307,7 @@ class Observe(Expression) :
         G1, E1 = self.expression_1.compile(context)
         G2, E2 = self.expression_2.compile(context)
         G1 = G1.disjoint_sum(G2)
-        v = GraphVariable(get_new_var())
+        v = GraphVariable(context.env.get_new_var())
         F1 = E1.score(v, context.env)
         F = GraphIfExpression(context.predicate, F1, GraphNumber(1))
         Z = F1.freevars() - set([v])
@@ -264,3 +322,9 @@ class Observe(Expression) :
         G.Y[v] = E2
 
         return G, E2
+
+    def __str__(self, level=0):
+        ret = "\t"*level+"observe"+"\n"
+        ret += self.expression_1.__str__(level+1)
+        ret += self.expression_2.__str__(level+1)
+        return ret

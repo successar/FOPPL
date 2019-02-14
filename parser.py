@@ -15,7 +15,6 @@ class FOPPLParser() :
 
     def p_statement_expr(self, p):
         'statement : expression'
-        print(p[1])
         p[0] = p[1]
 
     def p_arguments_expr(self, p) :
@@ -23,7 +22,6 @@ class FOPPLParser() :
                     | VARIABLE'''
 
         if len(p) == 3 :
-            print(p[1])
             p[1].append(p[2])
             p[0] = p[1]
         else :
