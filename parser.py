@@ -53,6 +53,41 @@ class FOPPLParser() :
             le = LetExpression(v, e, le) 
 
         p[0] = le
+        
+    def p_expression_vector(self, p) :
+        '''expression : LBRAC expression_list RBRAC 
+                        | LBRAC RBRAC'''
+        if len(p) == 3 :
+            p[0] = ConstantCall('vector', params=[])
+        else :
+            p[0] = ConstantCall('vector', params=p[2])
+            
+    def p_expression_loop(self, p) :
+        '''expression : LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN'''
+        if p[5] in p.parser.top_environment.constants :
+            caller = ConstantCall
+        else :
+            caller = FunctionCall
+            
+        c = int(p[3])
+        v_base = p.parser.top_environment.get_fresh_var_for_program()
+        v = [v_base + '_' + str(i) for i in range(c)]
+        vvar = [p[4]] + [Variable(x) for x in v]
+        v = [None] + v
+        
+        a_base = p.parser.top_environment.get_fresh_var_for_program()
+        a = [a_base + '_' + str(i)  for i in range(len(p[6]))]
+        avar = [Variable(x) for x in a]
+        
+        le = vvar[-1]
+        for i in range(len(v) - 1, 0, -1) :
+            le = LetExpression(v[i], caller(name=p[5], params=[Number(i-1), vvar[i-1]]+avar), le)
+            
+        avarlist = list(zip(a, p[6]))
+        for (v, e) in avarlist[-1::-1] :
+            le = LetExpression(v, e, le)
+        
+        p[0] = le
 
     def p_expression_fcall(self, p) :
         'expression : LPAREN VARIABLE expression_list RPAREN'

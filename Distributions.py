@@ -1,4 +1,4 @@
-from scipy.stats import norm, bernoulli
+from scipy.stats import norm, bernoulli, rv_discrete
 
 class Distribution() :
     distribution = True
@@ -27,10 +27,23 @@ class Bernoulli(Distribution) :
 
     def logpdf(self, x) :
         return bernoulli.logpmf(x, self.p)
+    
+class Discrete(Distribution) :
+    def __init__(self, vec) :
+        super(Discrete, self).__init__()
+        self.vec = vec
+        
+    def sample(self) :
+        return rv_discrete(values=(range(len(self.vec)), self.vec)).rvs()
+    
+    def logpdf(self, x) :
+        return rv_discrete(values=(range(len(self.vec)), self.vec)).logpmf(x)
 
 distribution_constants = {
     'norm' : Normal,
     'bern' : Bernoulli,
+    'discrete' : Discrete,
     'p_norm' : lambda v, l, s : Normal(l, s).logpdf(v),
-    'p_bern' : lambda v, p : Bernoulli(p).logpdf(v)
+    'p_bern' : lambda v, p : Bernoulli(p).logpdf(v),
+    'p_discrete' : lambda v, vec : Discrete(vec).logpdf(v)
 }

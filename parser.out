@@ -1,5 +1,10 @@
 Created by PLY version 3.11 (http://www.dabeaz.com/ply)
 
+Unused terminals:
+
+    LCURLY
+    RCURLY
+
 Grammar
 
 Rule 0     S' -> statement
@@ -11,34 +16,40 @@ Rule 5     expression -> LPAREN IF expression expression expression RPAREN
 Rule 6     varexpre -> varexpre VARIABLE expression
 Rule 7     varexpre -> VARIABLE expression
 Rule 8     expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-Rule 9     expression -> LPAREN VARIABLE expression_list RPAREN
-Rule 10    expression_list -> expression_list expression
-Rule 11    expression_list -> expression
-Rule 12    expression -> LPAREN SAMPLE expression RPAREN
-Rule 13    expression -> LPAREN OBSERVE expression expression RPAREN
-Rule 14    expression -> NUMBER
-Rule 15    expression -> VARIABLE
+Rule 9     expression -> LBRAC expression_list RBRAC
+Rule 10    expression -> LBRAC RBRAC
+Rule 11    expression -> LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+Rule 12    expression -> LPAREN VARIABLE expression_list RPAREN
+Rule 13    expression_list -> expression_list expression
+Rule 14    expression_list -> expression
+Rule 15    expression -> LPAREN SAMPLE expression RPAREN
+Rule 16    expression -> LPAREN OBSERVE expression expression RPAREN
+Rule 17    expression -> NUMBER
+Rule 18    expression -> VARIABLE
 
 Terminals, with rules where they appear
 
 DEFN                 : 1
 IF                   : 5
-LBRAC                : 1 8
+LBRAC                : 1 8 9 10
+LCURLY               : 
 LET                  : 8
-LPAREN               : 1 5 8 9 12 13
-NUMBER               : 14
-OBSERVE              : 13
-RBRAC                : 1 8
-RPAREN               : 1 5 8 9 12 13
-SAMPLE               : 12
-VARIABLE             : 1 3 4 6 7 9 15
+LOOP                 : 11
+LPAREN               : 1 5 8 11 12 15 16
+NUMBER               : 11 17
+OBSERVE              : 16
+RBRAC                : 1 8 9 10
+RCURLY               : 
+RPAREN               : 1 5 8 11 12 15 16
+SAMPLE               : 15
+VARIABLE             : 1 3 4 6 7 11 12 18
 error                : 
 
 Nonterminals, with rules where they appear
 
 arguments            : 1 3
-expression           : 1 2 5 5 5 6 7 10 11 12 13 13
-expression_list      : 8 9 10
+expression           : 1 2 5 5 5 6 7 11 13 14 15 16 16
+expression_list      : 8 9 11 12 13
 statement            : 1 0
 varexpre             : 6 8
 
@@ -51,18 +62,22 @@ state 0
     (2) statement -> . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
     (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
 
     LPAREN          shift and go to state 2
-    NUMBER          shift and go to state 5
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
     VARIABLE        shift and go to state 3
 
     statement                      shift and go to state 1
-    expression                     shift and go to state 4
+    expression                     shift and go to state 5
 
 state 1
 
@@ -75,331 +90,489 @@ state 2
     (1) statement -> LPAREN . DEFN VARIABLE LBRAC arguments RBRAC expression RPAREN statement
     (5) expression -> LPAREN . IF expression expression expression RPAREN
     (8) expression -> LPAREN . LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> LPAREN . VARIABLE expression_list RPAREN
-    (12) expression -> LPAREN . SAMPLE expression RPAREN
-    (13) expression -> LPAREN . OBSERVE expression expression RPAREN
+    (11) expression -> LPAREN . LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> LPAREN . VARIABLE expression_list RPAREN
+    (15) expression -> LPAREN . SAMPLE expression RPAREN
+    (16) expression -> LPAREN . OBSERVE expression expression RPAREN
 
-    DEFN            shift and go to state 6
-    IF              shift and go to state 8
-    LET             shift and go to state 9
-    VARIABLE        shift and go to state 7
-    SAMPLE          shift and go to state 10
-    OBSERVE         shift and go to state 11
+    DEFN            shift and go to state 7
+    IF              shift and go to state 9
+    LET             shift and go to state 10
+    LOOP            shift and go to state 11
+    VARIABLE        shift and go to state 8
+    SAMPLE          shift and go to state 12
+    OBSERVE         shift and go to state 13
 
 
 state 3
 
-    (15) expression -> VARIABLE .
+    (18) expression -> VARIABLE .
 
-    $end            reduce using rule 15 (expression -> VARIABLE .)
-    RPAREN          reduce using rule 15 (expression -> VARIABLE .)
-    LPAREN          reduce using rule 15 (expression -> VARIABLE .)
-    NUMBER          reduce using rule 15 (expression -> VARIABLE .)
-    VARIABLE        reduce using rule 15 (expression -> VARIABLE .)
-    RBRAC           reduce using rule 15 (expression -> VARIABLE .)
+    $end            reduce using rule 18 (expression -> VARIABLE .)
+    RBRAC           reduce using rule 18 (expression -> VARIABLE .)
+    LPAREN          reduce using rule 18 (expression -> VARIABLE .)
+    LBRAC           reduce using rule 18 (expression -> VARIABLE .)
+    NUMBER          reduce using rule 18 (expression -> VARIABLE .)
+    VARIABLE        reduce using rule 18 (expression -> VARIABLE .)
+    RPAREN          reduce using rule 18 (expression -> VARIABLE .)
 
 
 state 4
+
+    (9) expression -> LBRAC . expression_list RBRAC
+    (10) expression -> LBRAC . RBRAC
+    (13) expression_list -> . expression_list expression
+    (14) expression_list -> . expression
+    (5) expression -> . LPAREN IF expression expression expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
+
+    RBRAC           shift and go to state 15
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
+    VARIABLE        shift and go to state 3
+
+    expression_list                shift and go to state 14
+    expression                     shift and go to state 16
+
+state 5
 
     (2) statement -> expression .
 
     $end            reduce using rule 2 (statement -> expression .)
 
 
-state 5
-
-    (14) expression -> NUMBER .
-
-    $end            reduce using rule 14 (expression -> NUMBER .)
-    RPAREN          reduce using rule 14 (expression -> NUMBER .)
-    LPAREN          reduce using rule 14 (expression -> NUMBER .)
-    NUMBER          reduce using rule 14 (expression -> NUMBER .)
-    VARIABLE        reduce using rule 14 (expression -> NUMBER .)
-    RBRAC           reduce using rule 14 (expression -> NUMBER .)
-
-
 state 6
 
-    (1) statement -> LPAREN DEFN . VARIABLE LBRAC arguments RBRAC expression RPAREN statement
+    (17) expression -> NUMBER .
 
-    VARIABLE        shift and go to state 12
+    $end            reduce using rule 17 (expression -> NUMBER .)
+    RBRAC           reduce using rule 17 (expression -> NUMBER .)
+    LPAREN          reduce using rule 17 (expression -> NUMBER .)
+    LBRAC           reduce using rule 17 (expression -> NUMBER .)
+    NUMBER          reduce using rule 17 (expression -> NUMBER .)
+    VARIABLE        reduce using rule 17 (expression -> NUMBER .)
+    RPAREN          reduce using rule 17 (expression -> NUMBER .)
 
 
 state 7
 
-    (9) expression -> LPAREN VARIABLE . expression_list RPAREN
-    (10) expression_list -> . expression_list expression
-    (11) expression_list -> . expression
-    (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (1) statement -> LPAREN DEFN . VARIABLE LBRAC arguments RBRAC expression RPAREN statement
 
-    LPAREN          shift and go to state 13
-    NUMBER          shift and go to state 5
-    VARIABLE        shift and go to state 3
+    VARIABLE        shift and go to state 18
 
-    expression_list                shift and go to state 14
-    expression                     shift and go to state 15
 
 state 8
 
-    (5) expression -> LPAREN IF . expression expression expression RPAREN
+    (12) expression -> LPAREN VARIABLE . expression_list RPAREN
+    (13) expression_list -> . expression_list expression
+    (14) expression_list -> . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
     (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
 
-    LPAREN          shift and go to state 13
-    NUMBER          shift and go to state 5
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
     VARIABLE        shift and go to state 3
 
+    expression_list                shift and go to state 19
     expression                     shift and go to state 16
 
 state 9
 
-    (8) expression -> LPAREN LET . LBRAC varexpre RBRAC expression_list RPAREN
+    (5) expression -> LPAREN IF . expression expression expression RPAREN
+    (5) expression -> . LPAREN IF expression expression expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
 
-    LBRAC           shift and go to state 17
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
+    VARIABLE        shift and go to state 3
 
+    expression                     shift and go to state 20
 
 state 10
 
-    (12) expression -> LPAREN SAMPLE . expression RPAREN
-    (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (8) expression -> LPAREN LET . LBRAC varexpre RBRAC expression_list RPAREN
 
-    LPAREN          shift and go to state 13
-    NUMBER          shift and go to state 5
-    VARIABLE        shift and go to state 3
+    LBRAC           shift and go to state 21
 
-    expression                     shift and go to state 18
 
 state 11
 
-    (13) expression -> LPAREN OBSERVE . expression expression RPAREN
-    (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (11) expression -> LPAREN LOOP . NUMBER expression VARIABLE expression_list RPAREN
 
-    LPAREN          shift and go to state 13
-    NUMBER          shift and go to state 5
-    VARIABLE        shift and go to state 3
+    NUMBER          shift and go to state 22
 
-    expression                     shift and go to state 19
 
 state 12
 
-    (1) statement -> LPAREN DEFN VARIABLE . LBRAC arguments RBRAC expression RPAREN statement
-
-    LBRAC           shift and go to state 20
-
-
-state 13
-
-    (5) expression -> LPAREN . IF expression expression expression RPAREN
-    (8) expression -> LPAREN . LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> LPAREN . VARIABLE expression_list RPAREN
-    (12) expression -> LPAREN . SAMPLE expression RPAREN
-    (13) expression -> LPAREN . OBSERVE expression expression RPAREN
-
-    IF              shift and go to state 8
-    LET             shift and go to state 9
-    VARIABLE        shift and go to state 7
-    SAMPLE          shift and go to state 10
-    OBSERVE         shift and go to state 11
-
-
-state 14
-
-    (9) expression -> LPAREN VARIABLE expression_list . RPAREN
-    (10) expression_list -> expression_list . expression
+    (15) expression -> LPAREN SAMPLE . expression RPAREN
     (5) expression -> . LPAREN IF expression expression expression RPAREN
     (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
 
-    RPAREN          shift and go to state 21
-    LPAREN          shift and go to state 13
-    NUMBER          shift and go to state 5
-    VARIABLE        shift and go to state 3
-
-    expression                     shift and go to state 22
-
-state 15
-
-    (11) expression_list -> expression .
-
-    RPAREN          reduce using rule 11 (expression_list -> expression .)
-    LPAREN          reduce using rule 11 (expression_list -> expression .)
-    NUMBER          reduce using rule 11 (expression_list -> expression .)
-    VARIABLE        reduce using rule 11 (expression_list -> expression .)
-
-
-state 16
-
-    (5) expression -> LPAREN IF expression . expression expression RPAREN
-    (5) expression -> . LPAREN IF expression expression expression RPAREN
-    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
-
-    LPAREN          shift and go to state 13
-    NUMBER          shift and go to state 5
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
     VARIABLE        shift and go to state 3
 
     expression                     shift and go to state 23
 
+state 13
+
+    (16) expression -> LPAREN OBSERVE . expression expression RPAREN
+    (5) expression -> . LPAREN IF expression expression expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
+
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
+    VARIABLE        shift and go to state 3
+
+    expression                     shift and go to state 24
+
+state 14
+
+    (9) expression -> LBRAC expression_list . RBRAC
+    (13) expression_list -> expression_list . expression
+    (5) expression -> . LPAREN IF expression expression expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
+
+    RBRAC           shift and go to state 25
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
+    VARIABLE        shift and go to state 3
+
+    expression                     shift and go to state 26
+
+state 15
+
+    (10) expression -> LBRAC RBRAC .
+
+    $end            reduce using rule 10 (expression -> LBRAC RBRAC .)
+    RBRAC           reduce using rule 10 (expression -> LBRAC RBRAC .)
+    LPAREN          reduce using rule 10 (expression -> LBRAC RBRAC .)
+    LBRAC           reduce using rule 10 (expression -> LBRAC RBRAC .)
+    NUMBER          reduce using rule 10 (expression -> LBRAC RBRAC .)
+    VARIABLE        reduce using rule 10 (expression -> LBRAC RBRAC .)
+    RPAREN          reduce using rule 10 (expression -> LBRAC RBRAC .)
+
+
+state 16
+
+    (14) expression_list -> expression .
+
+    RBRAC           reduce using rule 14 (expression_list -> expression .)
+    LPAREN          reduce using rule 14 (expression_list -> expression .)
+    LBRAC           reduce using rule 14 (expression_list -> expression .)
+    NUMBER          reduce using rule 14 (expression_list -> expression .)
+    VARIABLE        reduce using rule 14 (expression_list -> expression .)
+    RPAREN          reduce using rule 14 (expression_list -> expression .)
+
+
 state 17
+
+    (5) expression -> LPAREN . IF expression expression expression RPAREN
+    (8) expression -> LPAREN . LET LBRAC varexpre RBRAC expression_list RPAREN
+    (11) expression -> LPAREN . LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> LPAREN . VARIABLE expression_list RPAREN
+    (15) expression -> LPAREN . SAMPLE expression RPAREN
+    (16) expression -> LPAREN . OBSERVE expression expression RPAREN
+
+    IF              shift and go to state 9
+    LET             shift and go to state 10
+    LOOP            shift and go to state 11
+    VARIABLE        shift and go to state 8
+    SAMPLE          shift and go to state 12
+    OBSERVE         shift and go to state 13
+
+
+state 18
+
+    (1) statement -> LPAREN DEFN VARIABLE . LBRAC arguments RBRAC expression RPAREN statement
+
+    LBRAC           shift and go to state 27
+
+
+state 19
+
+    (12) expression -> LPAREN VARIABLE expression_list . RPAREN
+    (13) expression_list -> expression_list . expression
+    (5) expression -> . LPAREN IF expression expression expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
+
+    RPAREN          shift and go to state 28
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
+    VARIABLE        shift and go to state 3
+
+    expression                     shift and go to state 26
+
+state 20
+
+    (5) expression -> LPAREN IF expression . expression expression RPAREN
+    (5) expression -> . LPAREN IF expression expression expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
+
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
+    VARIABLE        shift and go to state 3
+
+    expression                     shift and go to state 29
+
+state 21
 
     (8) expression -> LPAREN LET LBRAC . varexpre RBRAC expression_list RPAREN
     (6) varexpre -> . varexpre VARIABLE expression
     (7) varexpre -> . VARIABLE expression
 
-    VARIABLE        shift and go to state 25
+    VARIABLE        shift and go to state 31
 
-    varexpre                       shift and go to state 24
+    varexpre                       shift and go to state 30
 
-state 18
+state 22
 
-    (12) expression -> LPAREN SAMPLE expression . RPAREN
-
-    RPAREN          shift and go to state 26
-
-
-state 19
-
-    (13) expression -> LPAREN OBSERVE expression . expression RPAREN
+    (11) expression -> LPAREN LOOP NUMBER . expression VARIABLE expression_list RPAREN
     (5) expression -> . LPAREN IF expression expression expression RPAREN
     (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
 
-    LPAREN          shift and go to state 13
-    NUMBER          shift and go to state 5
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
     VARIABLE        shift and go to state 3
 
-    expression                     shift and go to state 27
+    expression                     shift and go to state 32
 
-state 20
+state 23
+
+    (15) expression -> LPAREN SAMPLE expression . RPAREN
+
+    RPAREN          shift and go to state 33
+
+
+state 24
+
+    (16) expression -> LPAREN OBSERVE expression . expression RPAREN
+    (5) expression -> . LPAREN IF expression expression expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
+
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
+    VARIABLE        shift and go to state 3
+
+    expression                     shift and go to state 34
+
+state 25
+
+    (9) expression -> LBRAC expression_list RBRAC .
+
+    $end            reduce using rule 9 (expression -> LBRAC expression_list RBRAC .)
+    RBRAC           reduce using rule 9 (expression -> LBRAC expression_list RBRAC .)
+    LPAREN          reduce using rule 9 (expression -> LBRAC expression_list RBRAC .)
+    LBRAC           reduce using rule 9 (expression -> LBRAC expression_list RBRAC .)
+    NUMBER          reduce using rule 9 (expression -> LBRAC expression_list RBRAC .)
+    VARIABLE        reduce using rule 9 (expression -> LBRAC expression_list RBRAC .)
+    RPAREN          reduce using rule 9 (expression -> LBRAC expression_list RBRAC .)
+
+
+state 26
+
+    (13) expression_list -> expression_list expression .
+
+    RBRAC           reduce using rule 13 (expression_list -> expression_list expression .)
+    LPAREN          reduce using rule 13 (expression_list -> expression_list expression .)
+    LBRAC           reduce using rule 13 (expression_list -> expression_list expression .)
+    NUMBER          reduce using rule 13 (expression_list -> expression_list expression .)
+    VARIABLE        reduce using rule 13 (expression_list -> expression_list expression .)
+    RPAREN          reduce using rule 13 (expression_list -> expression_list expression .)
+
+
+state 27
 
     (1) statement -> LPAREN DEFN VARIABLE LBRAC . arguments RBRAC expression RPAREN statement
     (3) arguments -> . arguments VARIABLE
     (4) arguments -> . VARIABLE
 
-    VARIABLE        shift and go to state 28
+    VARIABLE        shift and go to state 35
 
-    arguments                      shift and go to state 29
+    arguments                      shift and go to state 36
 
-state 21
+state 28
 
-    (9) expression -> LPAREN VARIABLE expression_list RPAREN .
+    (12) expression -> LPAREN VARIABLE expression_list RPAREN .
 
-    $end            reduce using rule 9 (expression -> LPAREN VARIABLE expression_list RPAREN .)
-    RPAREN          reduce using rule 9 (expression -> LPAREN VARIABLE expression_list RPAREN .)
-    LPAREN          reduce using rule 9 (expression -> LPAREN VARIABLE expression_list RPAREN .)
-    NUMBER          reduce using rule 9 (expression -> LPAREN VARIABLE expression_list RPAREN .)
-    VARIABLE        reduce using rule 9 (expression -> LPAREN VARIABLE expression_list RPAREN .)
-    RBRAC           reduce using rule 9 (expression -> LPAREN VARIABLE expression_list RPAREN .)
-
-
-state 22
-
-    (10) expression_list -> expression_list expression .
-
-    RPAREN          reduce using rule 10 (expression_list -> expression_list expression .)
-    LPAREN          reduce using rule 10 (expression_list -> expression_list expression .)
-    NUMBER          reduce using rule 10 (expression_list -> expression_list expression .)
-    VARIABLE        reduce using rule 10 (expression_list -> expression_list expression .)
+    $end            reduce using rule 12 (expression -> LPAREN VARIABLE expression_list RPAREN .)
+    RBRAC           reduce using rule 12 (expression -> LPAREN VARIABLE expression_list RPAREN .)
+    LPAREN          reduce using rule 12 (expression -> LPAREN VARIABLE expression_list RPAREN .)
+    LBRAC           reduce using rule 12 (expression -> LPAREN VARIABLE expression_list RPAREN .)
+    NUMBER          reduce using rule 12 (expression -> LPAREN VARIABLE expression_list RPAREN .)
+    VARIABLE        reduce using rule 12 (expression -> LPAREN VARIABLE expression_list RPAREN .)
+    RPAREN          reduce using rule 12 (expression -> LPAREN VARIABLE expression_list RPAREN .)
 
 
-state 23
+state 29
 
     (5) expression -> LPAREN IF expression expression . expression RPAREN
     (5) expression -> . LPAREN IF expression expression expression RPAREN
     (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
 
-    LPAREN          shift and go to state 13
-    NUMBER          shift and go to state 5
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
     VARIABLE        shift and go to state 3
 
-    expression                     shift and go to state 30
+    expression                     shift and go to state 37
 
-state 24
+state 30
 
     (8) expression -> LPAREN LET LBRAC varexpre . RBRAC expression_list RPAREN
     (6) varexpre -> varexpre . VARIABLE expression
 
-    RBRAC           shift and go to state 31
-    VARIABLE        shift and go to state 32
+    RBRAC           shift and go to state 38
+    VARIABLE        shift and go to state 39
 
 
-state 25
+state 31
 
     (7) varexpre -> VARIABLE . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
     (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
 
-    LPAREN          shift and go to state 13
-    NUMBER          shift and go to state 5
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
     VARIABLE        shift and go to state 3
 
-    expression                     shift and go to state 33
+    expression                     shift and go to state 40
 
-state 26
+state 32
 
-    (12) expression -> LPAREN SAMPLE expression RPAREN .
+    (11) expression -> LPAREN LOOP NUMBER expression . VARIABLE expression_list RPAREN
 
-    $end            reduce using rule 12 (expression -> LPAREN SAMPLE expression RPAREN .)
-    RPAREN          reduce using rule 12 (expression -> LPAREN SAMPLE expression RPAREN .)
-    LPAREN          reduce using rule 12 (expression -> LPAREN SAMPLE expression RPAREN .)
-    NUMBER          reduce using rule 12 (expression -> LPAREN SAMPLE expression RPAREN .)
-    VARIABLE        reduce using rule 12 (expression -> LPAREN SAMPLE expression RPAREN .)
-    RBRAC           reduce using rule 12 (expression -> LPAREN SAMPLE expression RPAREN .)
+    VARIABLE        shift and go to state 41
 
 
-state 27
+state 33
 
-    (13) expression -> LPAREN OBSERVE expression expression . RPAREN
+    (15) expression -> LPAREN SAMPLE expression RPAREN .
 
-    RPAREN          shift and go to state 34
+    $end            reduce using rule 15 (expression -> LPAREN SAMPLE expression RPAREN .)
+    RBRAC           reduce using rule 15 (expression -> LPAREN SAMPLE expression RPAREN .)
+    LPAREN          reduce using rule 15 (expression -> LPAREN SAMPLE expression RPAREN .)
+    LBRAC           reduce using rule 15 (expression -> LPAREN SAMPLE expression RPAREN .)
+    NUMBER          reduce using rule 15 (expression -> LPAREN SAMPLE expression RPAREN .)
+    VARIABLE        reduce using rule 15 (expression -> LPAREN SAMPLE expression RPAREN .)
+    RPAREN          reduce using rule 15 (expression -> LPAREN SAMPLE expression RPAREN .)
 
 
-state 28
+state 34
+
+    (16) expression -> LPAREN OBSERVE expression expression . RPAREN
+
+    RPAREN          shift and go to state 42
+
+
+state 35
 
     (4) arguments -> VARIABLE .
 
@@ -407,60 +580,68 @@ state 28
     VARIABLE        reduce using rule 4 (arguments -> VARIABLE .)
 
 
-state 29
+state 36
 
     (1) statement -> LPAREN DEFN VARIABLE LBRAC arguments . RBRAC expression RPAREN statement
     (3) arguments -> arguments . VARIABLE
 
-    RBRAC           shift and go to state 36
-    VARIABLE        shift and go to state 35
+    RBRAC           shift and go to state 44
+    VARIABLE        shift and go to state 43
 
 
-state 30
+state 37
 
     (5) expression -> LPAREN IF expression expression expression . RPAREN
 
-    RPAREN          shift and go to state 37
+    RPAREN          shift and go to state 45
 
 
-state 31
+state 38
 
     (8) expression -> LPAREN LET LBRAC varexpre RBRAC . expression_list RPAREN
-    (10) expression_list -> . expression_list expression
-    (11) expression_list -> . expression
+    (13) expression_list -> . expression_list expression
+    (14) expression_list -> . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
     (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
 
-    LPAREN          shift and go to state 13
-    NUMBER          shift and go to state 5
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
     VARIABLE        shift and go to state 3
 
-    expression_list                shift and go to state 38
-    expression                     shift and go to state 15
+    expression_list                shift and go to state 46
+    expression                     shift and go to state 16
 
-state 32
+state 39
 
     (6) varexpre -> varexpre VARIABLE . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
     (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
 
-    LPAREN          shift and go to state 13
-    NUMBER          shift and go to state 5
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
     VARIABLE        shift and go to state 3
 
-    expression                     shift and go to state 39
+    expression                     shift and go to state 47
 
-state 33
+state 40
 
     (7) varexpre -> VARIABLE expression .
 
@@ -468,19 +649,44 @@ state 33
     VARIABLE        reduce using rule 7 (varexpre -> VARIABLE expression .)
 
 
-state 34
+state 41
 
-    (13) expression -> LPAREN OBSERVE expression expression RPAREN .
+    (11) expression -> LPAREN LOOP NUMBER expression VARIABLE . expression_list RPAREN
+    (13) expression_list -> . expression_list expression
+    (14) expression_list -> . expression
+    (5) expression -> . LPAREN IF expression expression expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
 
-    $end            reduce using rule 13 (expression -> LPAREN OBSERVE expression expression RPAREN .)
-    RPAREN          reduce using rule 13 (expression -> LPAREN OBSERVE expression expression RPAREN .)
-    LPAREN          reduce using rule 13 (expression -> LPAREN OBSERVE expression expression RPAREN .)
-    NUMBER          reduce using rule 13 (expression -> LPAREN OBSERVE expression expression RPAREN .)
-    VARIABLE        reduce using rule 13 (expression -> LPAREN OBSERVE expression expression RPAREN .)
-    RBRAC           reduce using rule 13 (expression -> LPAREN OBSERVE expression expression RPAREN .)
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
+    VARIABLE        shift and go to state 3
+
+    expression                     shift and go to state 16
+    expression_list                shift and go to state 48
+
+state 42
+
+    (16) expression -> LPAREN OBSERVE expression expression RPAREN .
+
+    $end            reduce using rule 16 (expression -> LPAREN OBSERVE expression expression RPAREN .)
+    RBRAC           reduce using rule 16 (expression -> LPAREN OBSERVE expression expression RPAREN .)
+    LPAREN          reduce using rule 16 (expression -> LPAREN OBSERVE expression expression RPAREN .)
+    LBRAC           reduce using rule 16 (expression -> LPAREN OBSERVE expression expression RPAREN .)
+    NUMBER          reduce using rule 16 (expression -> LPAREN OBSERVE expression expression RPAREN .)
+    VARIABLE        reduce using rule 16 (expression -> LPAREN OBSERVE expression expression RPAREN .)
+    RPAREN          reduce using rule 16 (expression -> LPAREN OBSERVE expression expression RPAREN .)
 
 
-state 35
+state 43
 
     (3) arguments -> arguments VARIABLE .
 
@@ -488,55 +694,64 @@ state 35
     VARIABLE        reduce using rule 3 (arguments -> arguments VARIABLE .)
 
 
-state 36
+state 44
 
     (1) statement -> LPAREN DEFN VARIABLE LBRAC arguments RBRAC . expression RPAREN statement
     (5) expression -> . LPAREN IF expression expression expression RPAREN
     (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
 
-    LPAREN          shift and go to state 13
-    NUMBER          shift and go to state 5
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
     VARIABLE        shift and go to state 3
 
-    expression                     shift and go to state 40
+    expression                     shift and go to state 49
 
-state 37
+state 45
 
     (5) expression -> LPAREN IF expression expression expression RPAREN .
 
     $end            reduce using rule 5 (expression -> LPAREN IF expression expression expression RPAREN .)
-    RPAREN          reduce using rule 5 (expression -> LPAREN IF expression expression expression RPAREN .)
+    RBRAC           reduce using rule 5 (expression -> LPAREN IF expression expression expression RPAREN .)
     LPAREN          reduce using rule 5 (expression -> LPAREN IF expression expression expression RPAREN .)
+    LBRAC           reduce using rule 5 (expression -> LPAREN IF expression expression expression RPAREN .)
     NUMBER          reduce using rule 5 (expression -> LPAREN IF expression expression expression RPAREN .)
     VARIABLE        reduce using rule 5 (expression -> LPAREN IF expression expression expression RPAREN .)
-    RBRAC           reduce using rule 5 (expression -> LPAREN IF expression expression expression RPAREN .)
+    RPAREN          reduce using rule 5 (expression -> LPAREN IF expression expression expression RPAREN .)
 
 
-state 38
+state 46
 
     (8) expression -> LPAREN LET LBRAC varexpre RBRAC expression_list . RPAREN
-    (10) expression_list -> expression_list . expression
+    (13) expression_list -> expression_list . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
     (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
 
-    RPAREN          shift and go to state 41
-    LPAREN          shift and go to state 13
-    NUMBER          shift and go to state 5
+    RPAREN          shift and go to state 50
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
     VARIABLE        shift and go to state 3
 
-    expression                     shift and go to state 22
+    expression                     shift and go to state 26
 
-state 39
+state 47
 
     (6) varexpre -> varexpre VARIABLE expression .
 
@@ -544,46 +759,87 @@ state 39
     VARIABLE        reduce using rule 6 (varexpre -> varexpre VARIABLE expression .)
 
 
-state 40
+state 48
+
+    (11) expression -> LPAREN LOOP NUMBER expression VARIABLE expression_list . RPAREN
+    (13) expression_list -> expression_list . expression
+    (5) expression -> . LPAREN IF expression expression expression RPAREN
+    (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
+
+    RPAREN          shift and go to state 51
+    LPAREN          shift and go to state 17
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
+    VARIABLE        shift and go to state 3
+
+    expression                     shift and go to state 26
+
+state 49
 
     (1) statement -> LPAREN DEFN VARIABLE LBRAC arguments RBRAC expression . RPAREN statement
 
-    RPAREN          shift and go to state 42
+    RPAREN          shift and go to state 52
 
 
-state 41
+state 50
 
     (8) expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .
 
     $end            reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
-    RPAREN          reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
+    RBRAC           reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
     LPAREN          reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
+    LBRAC           reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
     NUMBER          reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
     VARIABLE        reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
-    RBRAC           reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
+    RPAREN          reduce using rule 8 (expression -> LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN .)
 
 
-state 42
+state 51
+
+    (11) expression -> LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN .
+
+    $end            reduce using rule 11 (expression -> LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN .)
+    RBRAC           reduce using rule 11 (expression -> LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN .)
+    LPAREN          reduce using rule 11 (expression -> LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN .)
+    LBRAC           reduce using rule 11 (expression -> LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN .)
+    NUMBER          reduce using rule 11 (expression -> LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN .)
+    VARIABLE        reduce using rule 11 (expression -> LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN .)
+    RPAREN          reduce using rule 11 (expression -> LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN .)
+
+
+state 52
 
     (1) statement -> LPAREN DEFN VARIABLE LBRAC arguments RBRAC expression RPAREN . statement
     (1) statement -> . LPAREN DEFN VARIABLE LBRAC arguments RBRAC expression RPAREN statement
     (2) statement -> . expression
     (5) expression -> . LPAREN IF expression expression expression RPAREN
     (8) expression -> . LPAREN LET LBRAC varexpre RBRAC expression_list RPAREN
-    (9) expression -> . LPAREN VARIABLE expression_list RPAREN
-    (12) expression -> . LPAREN SAMPLE expression RPAREN
-    (13) expression -> . LPAREN OBSERVE expression expression RPAREN
-    (14) expression -> . NUMBER
-    (15) expression -> . VARIABLE
+    (9) expression -> . LBRAC expression_list RBRAC
+    (10) expression -> . LBRAC RBRAC
+    (11) expression -> . LPAREN LOOP NUMBER expression VARIABLE expression_list RPAREN
+    (12) expression -> . LPAREN VARIABLE expression_list RPAREN
+    (15) expression -> . LPAREN SAMPLE expression RPAREN
+    (16) expression -> . LPAREN OBSERVE expression expression RPAREN
+    (17) expression -> . NUMBER
+    (18) expression -> . VARIABLE
 
     LPAREN          shift and go to state 2
-    NUMBER          shift and go to state 5
+    LBRAC           shift and go to state 4
+    NUMBER          shift and go to state 6
     VARIABLE        shift and go to state 3
 
-    expression                     shift and go to state 4
-    statement                      shift and go to state 43
+    expression                     shift and go to state 5
+    statement                      shift and go to state 53
 
-state 43
+state 53
 
     (1) statement -> LPAREN DEFN VARIABLE LBRAC arguments RBRAC expression RPAREN statement .
 

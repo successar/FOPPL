@@ -31,7 +31,7 @@ class Graph() :
             ng.add_edge(str(e[0]), str(e[1]))
             
         H = nx.relabel_nodes(ng, {str(v):str(self.P[v]).replace('(', '\n(') for v in self.V})
-        plt.figure(figsize=(20,5))
+        plt.figure(figsize=(20,20))
         plt.gca().margins(0.2, 0.2)  
         pos = graphviz_layout(H, prog='dot')
         non_observe_nodes = [str(self.P[v]).replace('(', '\n(') for v in self.V if v not in self.Y]

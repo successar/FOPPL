@@ -32,7 +32,12 @@ class Environment() :
             v = 'x_' + str(self.random_var_id)
         self.random_var_id += 1
         return v
-
+    
+    def get_fresh_var_for_program(self) :
+        hash = random.getrandbits(128)
+        return 'foppl_x_' + str(hash)
+        
+        
 class Context() :
     def __init__(self, env) :
         self.env = env
@@ -245,7 +250,7 @@ class FunctionCall(Expression) :
 
         if self.name in context.env.procedures :
             obj = context.env.procedures[self.name]
-            G1, E = obj.compile(context.env, results)  
+            G1, E = obj.compile(context.env, [r[1] for r in results])  
             return G.disjoint_sum(G1), E
         else :
             raise LookupError("%s does not exist "%(self.name,)) 
@@ -274,7 +279,10 @@ class Sample(Expression) :
     def compile(self, context) :
         G1, E1 = self.expression.compile(context)
         v = GraphVariable(context.env.get_new_var())
-        Z = E1.freevars()
+        try :
+            Z = E1.freevars()
+        except :
+            breakpoint()
         F = E1.score(v, context.env)
 
         G = Graph()

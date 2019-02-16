@@ -6,10 +6,11 @@ class FOPPLLexer() :
         'sample' : 'SAMPLE',
         'observe' : 'OBSERVE',
         'let' : 'LET',
-        'if' : 'IF'
+        'if' : 'IF',
+        'loop' : 'LOOP'
     }
 
-    tokens = ['LPAREN','RPAREN', 'LBRAC', 'RBRAC', 'NUMBER', 'VARIABLE'] + list(reserved.values())
+    tokens = ['LPAREN','RPAREN', 'LBRAC', 'RBRAC', 'LCURLY', 'RCURLY', 'NUMBER', 'VARIABLE'] + list(reserved.values())
 
     # Tokens
 
@@ -17,6 +18,8 @@ class FOPPLLexer() :
     t_RPAREN  = r'\)'
     t_LBRAC  = r'\['
     t_RBRAC  = r'\]'
+    t_LCURLY = r'\{'
+    t_RCURLY = r'\}'
 
     def t_NUMBER(self, t):
         r'-?\d+(\.\d+)?'
